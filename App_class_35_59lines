@@ -51,12 +51,88 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
     
     
     methods (Access = public)
-        function PlotFreqResponce()
+        function PlotFreqResponce(app)
             [H_db, w] = app.Equalizer.GetFreqResponce();
             plot (app.FreqResponce, w, H_db);
         end
     end
     
+    
+
+    methods (Access = private)
+
+        % Code that executes after component creation
+        function startupFcn(app)
+            app.startupFcn = PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain1
+        function Gain1ValueChanged(app, event)
+            app.equalizer.gain (1) = app.Gain1.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain2
+        function Gain2ValueChanged(app, event)
+            app.equalizer.gain (2) = app.Gain2.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain3
+        function Gain3ValueChanged(app, event)
+            app.equalizer.gain (3) = app.Gain3.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain4
+        function Gain4ValueChanged(app, event)
+            app.equalizer.gain (4) = app.Gain4.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain5
+        function Gain5ValueChanged(app, event)
+            app.equalizer.gain (5) = app.Gain5.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain6
+        function Gain6ValueChanged(app, event)
+            app.equalizer.gain (6) = app.Gain6.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain7
+        function Gain7ValueChanged(app, event)
+            app.equalizer.gain (7) = app.Gain7.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain8
+        function Gain8ValueChanged(app, event)
+            app.equalizer.gain (8) = app.Gain8.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain9
+        function Gain9ValueChanged(app, event)
+            app.equalizer.gain (9) = app.Gain9.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Value changed function: Gain10
+        function Gain10ValueChanged(app, event)
+            app.equalizer.gain (10) = app.Gain10.Value;
+            PlotFreqResponce(app);
+        end
+
+        % Button pushed function: LoadButton
+        function LoadButtonPushed(app, event)
+            app.filename = uigetfile ("*.mp3");
+            app.fileReader = dsp.AudioFileReader (app.filename, 'PlayCount', inf, 'SamplesPerFrame', 4096);
+            app.TRACKNAMELabel.Text = app.filename;
+        end
+    end
 
     % App initialization and construction
     methods (Access = private)
@@ -71,6 +147,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
 
             % Create LoadButton
             app.LoadButton = uibutton(app.UIFigure, 'push');
+            app.LoadButton.ButtonPushedFcn = createCallbackFcn(app, @LoadButtonPushed, true);
             app.LoadButton.BackgroundColor = [0 1 1];
             app.LoadButton.FontName = 'Magneto';
             app.LoadButton.Position = [641 643 100 84];
@@ -110,6 +187,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain1 = uislider(app.UIFigure);
             app.Gain1.Limits = [-10 10];
             app.Gain1.Orientation = 'vertical';
+            app.Gain1.ValueChangedFcn = createCallbackFcn(app, @Gain1ValueChanged, true);
             app.Gain1.Position = [79 326 3 263];
 
             % Create HzLabel_2
@@ -124,6 +202,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain2 = uislider(app.UIFigure);
             app.Gain2.Limits = [-10 10];
             app.Gain2.Orientation = 'vertical';
+            app.Gain2.ValueChangedFcn = createCallbackFcn(app, @Gain2ValueChanged, true);
             app.Gain2.Position = [177 326 3 263];
 
             % Create HzLabel_3
@@ -138,6 +217,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain3 = uislider(app.UIFigure);
             app.Gain3.Limits = [-10 10];
             app.Gain3.Orientation = 'vertical';
+            app.Gain3.ValueChangedFcn = createCallbackFcn(app, @Gain3ValueChanged, true);
             app.Gain3.Position = [275 326 3 263];
 
             % Create HzLabel_4
@@ -152,6 +232,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain4 = uislider(app.UIFigure);
             app.Gain4.Limits = [-10 10];
             app.Gain4.Orientation = 'vertical';
+            app.Gain4.ValueChangedFcn = createCallbackFcn(app, @Gain4ValueChanged, true);
             app.Gain4.Position = [373 326 3 263];
 
             % Create HzLabel_5
@@ -166,6 +247,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain5 = uislider(app.UIFigure);
             app.Gain5.Limits = [-10 10];
             app.Gain5.Orientation = 'vertical';
+            app.Gain5.ValueChangedFcn = createCallbackFcn(app, @Gain5ValueChanged, true);
             app.Gain5.Position = [471 326 3 263];
 
             % Create KHzLabel
@@ -180,6 +262,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain6 = uislider(app.UIFigure);
             app.Gain6.Limits = [-10 10];
             app.Gain6.Orientation = 'vertical';
+            app.Gain6.ValueChangedFcn = createCallbackFcn(app, @Gain6ValueChanged, true);
             app.Gain6.Position = [569 326 3 263];
 
             % Create KHzLabel_2
@@ -194,6 +277,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain7 = uislider(app.UIFigure);
             app.Gain7.Limits = [-10 10];
             app.Gain7.Orientation = 'vertical';
+            app.Gain7.ValueChangedFcn = createCallbackFcn(app, @Gain7ValueChanged, true);
             app.Gain7.Position = [667 326 3 263];
 
             % Create KHzLabel_3
@@ -208,6 +292,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain8 = uislider(app.UIFigure);
             app.Gain8.Limits = [-10 10];
             app.Gain8.Orientation = 'vertical';
+            app.Gain8.ValueChangedFcn = createCallbackFcn(app, @Gain8ValueChanged, true);
             app.Gain8.Position = [765 326 3 263];
 
             % Create KhzLabel
@@ -222,6 +307,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain9 = uislider(app.UIFigure);
             app.Gain9.Limits = [-10 10];
             app.Gain9.Orientation = 'vertical';
+            app.Gain9.ValueChangedFcn = createCallbackFcn(app, @Gain9ValueChanged, true);
             app.Gain9.Position = [863 326 3 263];
 
             % Create KHzLabel_4
@@ -236,6 +322,7 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
             app.Gain10 = uislider(app.UIFigure);
             app.Gain10.Limits = [-10 10];
             app.Gain10.Orientation = 'vertical';
+            app.Gain10.ValueChangedFcn = createCallbackFcn(app, @Gain10ValueChanged, true);
             app.Gain10.Position = [961 326 3 263];
 
             % Create Spectrum
@@ -276,6 +363,9 @@ classdef EqualizerApp_KartashowA < matlab.apps.AppBase
 
             % Register the app with App Designer
             registerApp(app, app.UIFigure)
+
+            % Execute the startup function
+            runStartupFcn(app, @startupFcn)
 
             if nargout == 0
                 clear app
