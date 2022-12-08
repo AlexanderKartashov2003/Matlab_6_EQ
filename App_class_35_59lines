@@ -1,0 +1,292 @@
+classdef EqualizerApp_KartashowA < matlab.apps.AppBase
+
+    % Properties that correspond to app components
+    properties (Access = public)
+        UIFigure        matlab.ui.Figure
+        LoadButton      matlab.ui.control.Button
+        PlayButton      matlab.ui.control.Button
+        PauseButton     matlab.ui.control.Button
+        StopButton      matlab.ui.control.Button
+        HzLabel         matlab.ui.control.Label
+        Gain1           matlab.ui.control.Slider
+        HzLabel_2       matlab.ui.control.Label
+        Gain2           matlab.ui.control.Slider
+        HzLabel_3       matlab.ui.control.Label
+        Gain3           matlab.ui.control.Slider
+        HzLabel_4       matlab.ui.control.Label
+        Gain4           matlab.ui.control.Slider
+        HzLabel_5       matlab.ui.control.Label
+        Gain5           matlab.ui.control.Slider
+        KHzLabel        matlab.ui.control.Label
+        Gain6           matlab.ui.control.Slider
+        KHzLabel_2      matlab.ui.control.Label
+        Gain7           matlab.ui.control.Slider
+        KHzLabel_3      matlab.ui.control.Label
+        Gain8           matlab.ui.control.Slider
+        KhzLabel        matlab.ui.control.Label
+        Gain9           matlab.ui.control.Slider
+        KHzLabel_4      matlab.ui.control.Label
+        Gain10          matlab.ui.control.Slider
+        Spectrum        matlab.ui.control.UIAxes
+        FreqResponce    matlab.ui.control.UIAxes
+        TRACKNAMELabel  matlab.ui.control.Label
+    end
+
+    
+    properties (Access = public)
+        equalizer = Equalizer(64, 44100);
+    end
+    properties (Access = public)
+        deviceWriter = audioDeviceWriter('SampleRate', 44100);
+    end
+    properties (Access = public)
+        fileReader = dsp.AudioFileReader ();
+    end
+    properties (Access = private)
+        filename;
+    end
+    properties (Access = private)
+        stopFlag = boolean(false);
+    end
+    
+    
+    methods (Access = public)
+        function PlotFreqResponce()
+            [H_db, w] = app.Equalizer.GetFreqResponce();
+            plot (app.FreqResponce, w, H_db);
+        end
+    end
+    
+
+    % App initialization and construction
+    methods (Access = private)
+
+        % Create UIFigure and components
+        function createComponents(app)
+
+            % Create UIFigure
+            app.UIFigure = uifigure;
+            app.UIFigure.Position = [100 100 1024 768];
+            app.UIFigure.Name = 'UI Figure';
+
+            % Create LoadButton
+            app.LoadButton = uibutton(app.UIFigure, 'push');
+            app.LoadButton.BackgroundColor = [0 1 1];
+            app.LoadButton.FontName = 'Magneto';
+            app.LoadButton.Position = [641 643 100 84];
+            app.LoadButton.Text = 'Load';
+
+            % Create PlayButton
+            app.PlayButton = uibutton(app.UIFigure, 'push');
+            app.PlayButton.BackgroundColor = [0 1 0];
+            app.PlayButton.FontName = 'Magneto';
+            app.PlayButton.Position = [758 692 100 35];
+            app.PlayButton.Text = 'Play';
+
+            % Create PauseButton
+            app.PauseButton = uibutton(app.UIFigure, 'push');
+            app.PauseButton.BackgroundColor = [1 1 0.0667];
+            app.PauseButton.FontName = 'Magneto';
+            app.PauseButton.Position = [758 643 100 31];
+            app.PauseButton.Text = 'Pause';
+
+            % Create StopButton
+            app.StopButton = uibutton(app.UIFigure, 'push');
+            app.StopButton.BackgroundColor = [1 0 0];
+            app.StopButton.FontName = 'Magneto';
+            app.StopButton.FontColor = [1 1 1];
+            app.StopButton.Position = [870 643 97 84];
+            app.StopButton.Text = 'Stop';
+
+            % Create HzLabel
+            app.HzLabel = uilabel(app.UIFigure);
+            app.HzLabel.HorizontalAlignment = 'right';
+            app.HzLabel.FontName = 'Magneto';
+            app.HzLabel.FontSize = 9;
+            app.HzLabel.Position = [24 447 34 22];
+            app.HzLabel.Text = '31 Hz';
+
+            % Create Gain1
+            app.Gain1 = uislider(app.UIFigure);
+            app.Gain1.Limits = [-10 10];
+            app.Gain1.Orientation = 'vertical';
+            app.Gain1.Position = [79 326 3 263];
+
+            % Create HzLabel_2
+            app.HzLabel_2 = uilabel(app.UIFigure);
+            app.HzLabel_2.HorizontalAlignment = 'right';
+            app.HzLabel_2.FontName = 'Magneto';
+            app.HzLabel_2.FontSize = 9;
+            app.HzLabel_2.Position = [120 447 36 22];
+            app.HzLabel_2.Text = '62 Hz';
+
+            % Create Gain2
+            app.Gain2 = uislider(app.UIFigure);
+            app.Gain2.Limits = [-10 10];
+            app.Gain2.Orientation = 'vertical';
+            app.Gain2.Position = [177 326 3 263];
+
+            % Create HzLabel_3
+            app.HzLabel_3 = uilabel(app.UIFigure);
+            app.HzLabel_3.HorizontalAlignment = 'right';
+            app.HzLabel_3.FontName = 'Magneto';
+            app.HzLabel_3.FontSize = 9;
+            app.HzLabel_3.Position = [214 447 40 22];
+            app.HzLabel_3.Text = '125 Hz';
+
+            % Create Gain3
+            app.Gain3 = uislider(app.UIFigure);
+            app.Gain3.Limits = [-10 10];
+            app.Gain3.Orientation = 'vertical';
+            app.Gain3.Position = [275 326 3 263];
+
+            % Create HzLabel_4
+            app.HzLabel_4 = uilabel(app.UIFigure);
+            app.HzLabel_4.HorizontalAlignment = 'right';
+            app.HzLabel_4.FontName = 'Magneto';
+            app.HzLabel_4.FontSize = 9;
+            app.HzLabel_4.Position = [309 447 43 22];
+            app.HzLabel_4.Text = '250 Hz';
+
+            % Create Gain4
+            app.Gain4 = uislider(app.UIFigure);
+            app.Gain4.Limits = [-10 10];
+            app.Gain4.Orientation = 'vertical';
+            app.Gain4.Position = [373 326 3 263];
+
+            % Create HzLabel_5
+            app.HzLabel_5 = uilabel(app.UIFigure);
+            app.HzLabel_5.HorizontalAlignment = 'right';
+            app.HzLabel_5.FontName = 'Magneto';
+            app.HzLabel_5.FontSize = 9;
+            app.HzLabel_5.Position = [406 447 44 22];
+            app.HzLabel_5.Text = '500 Hz';
+
+            % Create Gain5
+            app.Gain5 = uislider(app.UIFigure);
+            app.Gain5.Limits = [-10 10];
+            app.Gain5.Orientation = 'vertical';
+            app.Gain5.Position = [471 326 3 263];
+
+            % Create KHzLabel
+            app.KHzLabel = uilabel(app.UIFigure);
+            app.KHzLabel.HorizontalAlignment = 'right';
+            app.KHzLabel.FontName = 'Magneto';
+            app.KHzLabel.FontSize = 9;
+            app.KHzLabel.Position = [513 447 35 22];
+            app.KHzLabel.Text = '1 KHz';
+
+            % Create Gain6
+            app.Gain6 = uislider(app.UIFigure);
+            app.Gain6.Limits = [-10 10];
+            app.Gain6.Orientation = 'vertical';
+            app.Gain6.Position = [569 326 3 263];
+
+            % Create KHzLabel_2
+            app.KHzLabel_2 = uilabel(app.UIFigure);
+            app.KHzLabel_2.HorizontalAlignment = 'right';
+            app.KHzLabel_2.FontName = 'Magneto';
+            app.KHzLabel_2.FontSize = 9;
+            app.KHzLabel_2.Position = [609 447 37 22];
+            app.KHzLabel_2.Text = '2 KHz';
+
+            % Create Gain7
+            app.Gain7 = uislider(app.UIFigure);
+            app.Gain7.Limits = [-10 10];
+            app.Gain7.Orientation = 'vertical';
+            app.Gain7.Position = [667 326 3 263];
+
+            % Create KHzLabel_3
+            app.KHzLabel_3 = uilabel(app.UIFigure);
+            app.KHzLabel_3.HorizontalAlignment = 'right';
+            app.KHzLabel_3.FontName = 'Magneto';
+            app.KHzLabel_3.FontSize = 9;
+            app.KHzLabel_3.Position = [706 447 38 22];
+            app.KHzLabel_3.Text = '4 KHz';
+
+            % Create Gain8
+            app.Gain8 = uislider(app.UIFigure);
+            app.Gain8.Limits = [-10 10];
+            app.Gain8.Orientation = 'vertical';
+            app.Gain8.Position = [765 326 3 263];
+
+            % Create KhzLabel
+            app.KhzLabel = uilabel(app.UIFigure);
+            app.KhzLabel.HorizontalAlignment = 'right';
+            app.KhzLabel.FontName = 'Magneto';
+            app.KhzLabel.FontSize = 9;
+            app.KhzLabel.Position = [809 447 33 22];
+            app.KhzLabel.Text = '8 Khz';
+
+            % Create Gain9
+            app.Gain9 = uislider(app.UIFigure);
+            app.Gain9.Limits = [-10 10];
+            app.Gain9.Orientation = 'vertical';
+            app.Gain9.Position = [863 326 3 263];
+
+            % Create KHzLabel_4
+            app.KHzLabel_4 = uilabel(app.UIFigure);
+            app.KHzLabel_4.HorizontalAlignment = 'right';
+            app.KHzLabel_4.FontName = 'Magneto';
+            app.KHzLabel_4.FontSize = 9;
+            app.KHzLabel_4.Position = [898 447 42 22];
+            app.KHzLabel_4.Text = '16 KHz';
+
+            % Create Gain10
+            app.Gain10 = uislider(app.UIFigure);
+            app.Gain10.Limits = [-10 10];
+            app.Gain10.Orientation = 'vertical';
+            app.Gain10.Position = [961 326 3 263];
+
+            % Create Spectrum
+            app.Spectrum = uiaxes(app.UIFigure);
+            title(app.Spectrum, 'Spectrum')
+            xlabel(app.Spectrum, 'Frequency')
+            ylabel(app.Spectrum, 'Spectrum')
+            app.Spectrum.FontName = 'Magneto';
+            app.Spectrum.Position = [57 1 422 307];
+
+            % Create FreqResponce
+            app.FreqResponce = uiaxes(app.UIFigure);
+            title(app.FreqResponce, 'FreqResponce')
+            xlabel(app.FreqResponce, 'Frequency')
+            ylabel(app.FreqResponce, 'FreqResponce')
+            app.FreqResponce.FontName = 'Magneto';
+            app.FreqResponce.Position = [506 1 458 307];
+
+            % Create TRACKNAMELabel
+            app.TRACKNAMELabel = uilabel(app.UIFigure);
+            app.TRACKNAMELabel.BackgroundColor = [0.7294 0.5843 0.5843];
+            app.TRACKNAMELabel.HorizontalAlignment = 'center';
+            app.TRACKNAMELabel.FontName = 'Magneto';
+            app.TRACKNAMELabel.FontSize = 15;
+            app.TRACKNAMELabel.FontColor = [1 1 1];
+            app.TRACKNAMELabel.Position = [198 656 328 59];
+            app.TRACKNAMELabel.Text = 'TRACKNAME';
+        end
+    end
+
+    methods (Access = public)
+
+        % Construct app
+        function app = EqualizerApp_KartashowA
+
+            % Create and configure components
+            createComponents(app)
+
+            % Register the app with App Designer
+            registerApp(app, app.UIFigure)
+
+            if nargout == 0
+                clear app
+            end
+        end
+
+        % Code that executes before app deletion
+        function delete(app)
+
+            % Delete UIFigure when app is deleted
+            delete(app.UIFigure)
+        end
+    end
+end
